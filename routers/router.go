@@ -15,4 +15,5 @@ import (
 
 func init() {
 	beego.Router("/v1/ipv6", &controllers.MainController{}, "Get:Get")
+	beego.Router("/v1/iptv", &controllers.MainController{}, "Get:GetIptv")
 }

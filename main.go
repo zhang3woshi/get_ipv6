@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	beego "github.com/beego/beego/v2/server/web"
+	"github.com/beego/beego/v2/server/web/filter/cors"
 )
 
 func testFunc() {
@@ -36,6 +37,14 @@ func main() {
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 	}
+	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
+		AllowCredentials: true,
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Origin", "Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
+			"Content-Type", "Access-Token", "Accept", "x-requested-with", "Domain"},
+		ExposeHeaders: []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
+		AllowOrigins:  []string{"*"},
+	}))
 	go beego.Run()
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)

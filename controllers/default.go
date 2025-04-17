@@ -2,7 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 
 	beego "github.com/beego/beego/v2/server/web"
@@ -40,4 +43,31 @@ func (c *MainController) Get() {
 
 	// 将过滤后的地址返回给客户端
 	c.Ctx.WriteString(ipv6)
+}
+
+// Get iptv m3u8
+// @Title Get iptv m3u8
+// @Description get iptv m3u8
+// @Success 200 {string} success
+// @router /iptv [get]
+func (c *MainController) GetIptv() {
+	var iptv string
+	// 使用系统函数打开iptv.txt文件
+	filePath := "./iptv.txt"
+	if runtime.GOOS == "linux" {
+		filePath = "/zhangyu/iptv.txt"
+	}
+	if file, err := os.Open(filePath); err != nil {
+		fmt.Println("open file failed:", err)
+		return
+	} else {
+		defer file.Close()
+		// 使用io.Reader读取文件内容
+		if data, err := io.ReadAll(file); err != nil {
+			iptv = fmt.Errorf("read file failed: %v", err).Error()
+		} else {
+			iptv = string(data)
+		}
+	}
+	c.Ctx.WriteString(iptv)
 }
